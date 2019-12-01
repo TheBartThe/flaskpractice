@@ -24,6 +24,7 @@ def register():
 @app.route("/post", methods=["GET", "POST"])
 def post():
     form = PostForm()
+    fields = [form.first_name, form.last_name, form.title, form.content]
     if form.validate_on_submit():
         postData = Posts(
             first_name=form.first_name.data,
@@ -36,4 +37,4 @@ def post():
         return redirect(url_for("home"))
     else:
         print(form.errors)
-    return render_template("post.html", title="Post", form=form)
+    return render_template("post.html", title="Post", form=form, fields=fields)
