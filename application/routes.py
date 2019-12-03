@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, request
 from application import app, db, bcrypt
 from application.models import Posts, User
-from application.forms import PostForm, RegistrationForm, LoginForm
+from application.forms import PostForm, RegistrationForm, LoginForm, UpdateAccountForm
 from flask_login import login_user, current_user, logout_user, login_required
 
 @app.route("/home")
@@ -41,15 +41,20 @@ def logout():
 @app.route("/register", methods=['GET','POST'])
 def register():
     form = RegistrationForm()
-    register_fields = [form.email, form.password, form.confirm_password]
+    register_fields = [form.first_name, form.last_name, form.email, form.password, form.confirm_password]
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
     if form.validate_on_submit():
         hashed_pw = bcrypt.generate_password_hash(form.password.data)
         user = User(
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
             email=form.email.data,
             password=hashed_pw
         )
         db.session.add(user)
         db.session.commit()
+        login_user(user)
         return redirect(url_for('post'))
     else:
         print(form.errors)
@@ -59,13 +64,12 @@ def register():
 @login_required
 def post():
     form = PostForm()
-    fields = [form.first_name, form.last_name, form.title, form.content]
+    fields = [form.title, form.content]
     if form.validate_on_submit():
         postData = Posts(
-            first_name=form.first_name.data,
-            last_name=form.last_name.data,
             title=form.title.data,
-            content=form.content.data
+            content=form.content.data,
+            author=current_user
         )
         db.session.add(postData)
         db.session.commit()
@@ -73,3 +77,19 @@ def post():
     else:
         print(form.errors)
         return render_template("post.html", title="Post", form=form, fields=fields)
+
+@app.route('/account', methods=['GET','POST'])
+@login_required
+def account():
+    form = UpdateAccountForm()
+    update_fields = [form.first_name, form.last_name, form.email]
+    if form.validate_on_submit():
+        current_user.first_name = form.first_name.data
+        current_user.last_name = form.last_name.data
+        current_user.email = form.email.data
+        db.session.commit()
+    elif request.method == 'GET':
+        form.first_name.data = current_user.first_name
+        form.last_name.data = current_user.last_name
+        form.email.data = current_user.email
+    return render_template('account.html', title='Account', form=form, fields=update_fields)

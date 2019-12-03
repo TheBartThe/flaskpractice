@@ -3,21 +3,9 @@ from wtforms import StringField, SubmitField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from application.models import Posts, User
 from application import login_manager
+from flask_login import current_user
 
 class PostForm(FlaskForm):
-    first_name = StringField("First Name",
-        validators=[
-            DataRequired(),
-            Length(min=1, max=30)
-        ]
-    )
-
-    last_name = StringField("Last Name",
-        validators=[
-            DataRequired(),
-            Length(min=1, max=30)
-        ]
-    )
     
     title = StringField("Title",
         validators=[
@@ -40,6 +28,20 @@ class RegistrationForm(FlaskForm):
         validators=[
             DataRequired(),
             Email()
+        ]
+    )
+
+    first_name = StringField("First Name",
+        validators=[
+            DataRequired(),
+            Length(min=1, max=30)
+        ]
+    )
+
+    last_name = StringField("Last Name",
+        validators=[
+            DataRequired(),
+            Length(min=1, max=30)
         ]
     )
 
@@ -78,3 +80,33 @@ class LoginForm(FlaskForm):
 
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
+
+class UpdateAccountForm(FlaskForm):
+    first_name = StringField("First Name",
+        validators=[
+            DataRequired(),
+            Length(min=1, max=30)
+        ]
+    )
+
+    last_name = StringField("Last Name",
+        validators=[
+            DataRequired(),
+            Length(min=1, max=30)
+        ]
+    )
+
+    email = StringField('Email',
+        validators=[
+            DataRequired(),
+            Email()
+        ]
+    )
+
+    submit = SubmitField('Update')
+
+    def validate_email(self, email):
+        if email.data != current_user.email:
+            user = Users.query.filter_by(email=email.data).first()
+            if user:
+                raise ValidationError('Email already in use - please choose another')
