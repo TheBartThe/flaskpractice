@@ -1,9 +1,0 @@
-[Unit]
-Description=Flask Application
-[Service]
-EnvironmentFile=/opt/flaskpractice/venv/bin/activate
-User=pythonadm
-WorkingDirectory=/opt/flaskpractice
-ExecStart=/bin/bash -c 'cd /opt/flaskpractice && source ./venv/bin/activate && ./app.py'
-[Install]
-WantedBy=multi-user.target
