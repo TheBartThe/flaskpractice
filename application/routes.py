@@ -42,6 +42,8 @@ def logout():
 def register():
     form = RegistrationForm()
     register_fields = [form.first_name, form.last_name, form.email, form.password, form.confirm_password]
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
     if form.validate_on_submit():
         hashed_pw = bcrypt.generate_password_hash(form.password.data)
         user = User(
@@ -52,13 +54,11 @@ def register():
         )
         db.session.add(user)
         db.session.commit()
+        login_user(user)
         return redirect(url_for('post'))
     else:
         print(form.errors)
         return render_template("register.html", title = "Register", form=form, register_fields=register_fields)
-def registration():
-    if current_user.is_authenticated:
-        return redirect(url_for('home'))
 
 @app.route("/post", methods=["GET", "POST"])
 @login_required
