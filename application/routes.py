@@ -31,7 +31,7 @@ def login():
                 return redirect(next_page)
             else:
                 return redirect(url_for('home'))
-    return render_template("login.html", title = "Login", form=form, login_fields=login_fields)
+    return render_template("login.html", title = "Login", form=form, fields=login_fields)
 
 @app.route("/logout")
 def logout():
@@ -58,13 +58,13 @@ def register():
         return redirect(url_for('post'))
     else:
         print(form.errors)
-        return render_template("register.html", title = "Register", form=form, register_fields=register_fields)
+        return render_template("register.html", title = "Register", form=form, fields=register_fields)
 
 @app.route("/post", methods=["GET", "POST"])
 @login_required
 def post():
     form = PostForm()
-    fields = [form.title, form.content]
+    post_fields = [form.title, form.content]
     if form.validate_on_submit():
         postData = Posts(
             title=form.title.data,
@@ -76,7 +76,7 @@ def post():
         return redirect(url_for("home"))
     else:
         print(form.errors)
-        return render_template("post.html", title="Post", form=form, fields=fields)
+        return render_template("post.html", title="Post", form=form, fields=post_fields)
 
 @app.route('/account', methods=['GET','POST'])
 @login_required
