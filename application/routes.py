@@ -41,10 +41,12 @@ def logout():
 @app.route("/register", methods=['GET','POST'])
 def register():
     form = RegistrationForm()
-    register_fields = [form.email, form.password, form.confirm_password]
+    register_fields = [form.first_name, form.last_name, form.email, form.password, form.confirm_password]
     if form.validate_on_submit():
         hashed_pw = bcrypt.generate_password_hash(form.password.data)
         user = User(
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
             email=form.email.data,
             password=hashed_pw
         )
@@ -54,18 +56,20 @@ def register():
     else:
         print(form.errors)
         return render_template("register.html", title = "Register", form=form, register_fields=register_fields)
+def registration():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
 
 @app.route("/post", methods=["GET", "POST"])
 @login_required
 def post():
     form = PostForm()
-    fields = [form.first_name, form.last_name, form.title, form.content]
+    fields = [form.title, form.content]
     if form.validate_on_submit():
         postData = Posts(
-            first_name=form.first_name.data,
-            last_name=form.last_name.data,
             title=form.title.data,
-            content=form.content.data
+            content=form.content.data,
+            author=current_user
         )
         db.session.add(postData)
         db.session.commit()

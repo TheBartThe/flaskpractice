@@ -5,19 +5,6 @@ from application.models import Posts, User
 from application import login_manager
 
 class PostForm(FlaskForm):
-    first_name = StringField("First Name",
-        validators=[
-            DataRequired(),
-            Length(min=1, max=30)
-        ]
-    )
-
-    last_name = StringField("Last Name",
-        validators=[
-            DataRequired(),
-            Length(min=1, max=30)
-        ]
-    )
     
     title = StringField("Title",
         validators=[
@@ -40,6 +27,20 @@ class RegistrationForm(FlaskForm):
         validators=[
             DataRequired(),
             Email()
+        ]
+    )
+
+    first_name = StringField("First Name",
+        validators=[
+            DataRequired(),
+            Length(min=1, max=30)
+        ]
+    )
+
+    last_name = StringField("Last Name",
+        validators=[
+            DataRequired(),
+            Length(min=1, max=30)
         ]
     )
 
