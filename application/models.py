@@ -17,9 +17,9 @@ class User(db.Model, UserMixin):
             'Name: ', self.first_name, ' ', self.last_name
         ])
 
-#    @login_manager.user_loader
-#    def load_user(id):
-#        return User.query.get(int(id))
+    @login_manager.user_loader
+    def load_user(id):
+        return User.query.get(int(id))
 
 class Posts(db.Model):
 
